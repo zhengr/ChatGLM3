@@ -209,7 +209,7 @@ async def get_embeddings(request: EmbeddingRequest):
 @app.get("/v1/models", response_model=ModelList)
 async def list_models():
     model_card = ModelCard(
-        id="chatglm3-6b"
+        id="MixTAO-7B-Functionary"
     )
     return ModelList(
         data=[model_card]
