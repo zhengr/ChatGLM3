@@ -55,7 +55,7 @@ def generate_stream_chatglm3(model: PreTrainedModel, tokenizer: PreTrainedTokeni
     messages = process_chatglm_messages(messages, tools=tools)
     query, role = messages[-1]["content"], messages[-1]["role"]
 
-    inputs = tokenizer.apply_chat_template(query, history=messages[:-1], role=role)
+    inputs = tokenizer.build_chat_input(query, history=messages[:-1], role=role)
     inputs = inputs.to(model.device)
     input_echo_len = len(inputs["input_ids"][0])
 
@@ -161,6 +161,18 @@ def generate_chatglm3(model: PreTrainedModel, tokenizer: PreTrainedTokenizer, pa
         pass
     return response
 
+def build_chat_input(self, query, history=None, role="user"):
+        if history is None:
+            history = []
+        input_ids = []
+        for item in history:
+            content = item["content"]
+            if item["role"] == "system" and "tools" in item:
+                content = content + "\n" + json.dumps(item["tools"], indent=4, ensure_ascii=False)
+            input_ids.extend(self.build_single_message(item["role"], item.get("metadata", ""), content))
+        input_ids.extend(self.build_single_message(role, "", query))
+        input_ids.extend([self.get_command("<|assistant|>")])
+        return self.batch_encode_plus([input_ids], return_tensors="pt", is_split_into_words=True)    
 
 def apply_stopping_strings(reply, stop_strings) -> Tuple[str, bool]:
     stop_found = False
