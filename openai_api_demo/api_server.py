@@ -48,7 +48,7 @@ from sse_starlette.sse import EventSourceResponse
 EventSourceResponse.DEFAULT_PING_INTERVAL = 1000
 
 # set LLM path
-MODEL_PATH = os.environ.get('MODEL_PATH', 'THUDM/chatglm3-6b')
+MODEL_PATH = os.environ.get('MODEL_PATH', 'zhengr/MixTAO-7B-Functionary')
 TOKENIZER_PATH = os.environ.get("TOKENIZER_PATH", MODEL_PATH)
 
 # set Embedding Model path
